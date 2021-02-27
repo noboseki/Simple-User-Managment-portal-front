@@ -15,7 +15,7 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
-  public getusers(): Observable<User[] | HttpErrorResponse> {
+  public getUsers(): Observable<User[]> {
     return this.http.get<User[]>(`${this.host}/user/list`);
   }
 

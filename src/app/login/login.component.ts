@@ -18,9 +18,10 @@ export class LoginComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   constructor(private router: Router, private authenticationService: AuthenticationService,
-              private notificationService: NotificationService) {}
+    private notificationService: NotificationService) { }
 
   ngOnInit(): void {
+    this.showLoading = false;
     if (this.authenticationService.isUserLoggedIn()) {
       this.router.navigateByUrl('/user/management');
     } else {
@@ -30,7 +31,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   public onLogin(user: User): void {
     this.showLoading = true;
-    console.log(user);
     this.subscriptions.push(
       this.authenticationService.login(user).subscribe(
         (response: HttpResponse<User> | any) => {
