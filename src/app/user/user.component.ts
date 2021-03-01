@@ -22,6 +22,8 @@ export class UserComponent implements OnInit {
   public fileName: string = "";
   public profileImage: File = new File(["foo"], "foo.jpg");
   private subscriptions: Subscription[] = [];
+  public editUser: User = new User;
+  private currentUsername: string = "";
 
   constructor(private userService: UserService, private notificationService: NotificationService) { }
 
@@ -91,6 +93,32 @@ export class UserComponent implements OnInit {
         }
       )
     );
+  }
+
+  public onUpdateUser(): void {
+    const formData = this.userService.createUserFormDate(this.currentUsername, this.editUser, this.profileImage);
+    this.subscriptions.push(
+      this.userService.updateUser(formData).subscribe(
+        (response: User | any) => {
+          this.clickButton('closeEditUserModalButton');
+          this.getUsers(false);
+          this.fileName = "";
+          this.profileImage = new File(["foo"], "foo.jpg");;
+          this.sendNotification(NotificationType.SUCCESS, `${response.firstName} ${response.lastName} updated successfully`);
+        },
+        (errorResponse: HttpErrorResponse) => {
+          this.sendNotification(NotificationType.ERROR, errorResponse.error.message);
+          this.profileImage = new File(["foo"], "foo.jpg");;
+        }
+      )
+    );
+  }
+
+
+  public onEditUser(editUser: User): void {
+    this.editUser = editUser;
+    this.currentUsername = editUser.username;
+    this.clickButton('openUserEdit');
   }
 
   public searchUsers(searchTerm: string): void {
