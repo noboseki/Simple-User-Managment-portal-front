@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { environment} from '../../environments/environment'
+import { environment } from '../../environments/environment'
 import { HttpClient, HttpErrorResponse, HttpEvent, HttpResponse } from '@angular/common/http'
 import { Observable } from 'rxjs';
 import { User } from '../model/user';
@@ -19,7 +19,7 @@ export class UserService {
     return this.http.get<User[]>(`${this.host}/user/list`);
   }
 
-  public addUsers(formData: FormData): Observable<User | HttpErrorResponse> {
+  public addUser(formData: FormData): Observable<User> {
     return this.http.post<User>(`${this.host}/user/add`, formData);
   }
 
@@ -33,22 +33,22 @@ export class UserService {
 
   public updateProfileImage(formData: FormData): Observable<HttpEvent<any> | HttpErrorResponse> {
     return this.http.post<User>(`${this.host}/user/updateProfileImage`, formData,
-    {
-      reportProgress: true,
-      observe: 'events'
-    });
+      {
+        reportProgress: true,
+        observe: 'events'
+      });
   }
 
-    public deleteUser(userId: number): Observable<CustomHttpRespone | HttpErrorResponse> {
-      return this.http.delete<CustomHttpRespone>(`${this.host}/user/delete/${userId}`)
+  public deleteUser(userId: number): Observable<CustomHttpRespone | HttpErrorResponse> {
+    return this.http.delete<CustomHttpRespone>(`${this.host}/user/delete/${userId}`)
   }
 
   public addUsersToLocalCache(users: User[]): void {
     localStorage.setItem('users', JSON.stringify(users));
   }
 
-  public getUsersfromLocalCache(): User[] {
-      return JSON.parse(localStorage.getItem('users') || '{}')
+  public getUsersFromLocalCache(): User[] {
+    return JSON.parse(localStorage.getItem('users') || '{}')
   }
 
   public createUserFormDate(loggedInUsername: string, user: User, profileImage: File): FormData {
