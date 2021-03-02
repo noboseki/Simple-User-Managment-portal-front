@@ -23,15 +23,15 @@ export class UserService {
     return this.http.post<User>(`${this.host}/user/add`, formData);
   }
 
-  public updateUser(formData: FormData): Observable<User | HttpErrorResponse> {
+  public updateUser(formData: FormData): Observable<User> {
     return this.http.post<User>(`${this.host}/user/update`, formData);
   }
 
-  public resetPassword(email: string): Observable<CustomHttpRespone | HttpErrorResponse> {
+  public resetPassword(email: string): Observable<CustomHttpRespone> {
     return this.http.get<CustomHttpRespone>(`${this.host}/user/resetPassword/${email}`);
   }
 
-  public updateProfileImage(formData: FormData): Observable<HttpEvent<any> | HttpErrorResponse> {
+  public updateProfileImage(formData: FormData): Observable<HttpEvent<any>> {
     return this.http.post<User>(`${this.host}/user/updateProfileImage`, formData,
       {
         reportProgress: true,
@@ -39,8 +39,8 @@ export class UserService {
       });
   }
 
-  public deleteUser(userId: number): Observable<CustomHttpRespone | HttpErrorResponse> {
-    return this.http.delete<CustomHttpRespone>(`${this.host}/user/delete/${userId}`)
+  public deleteUser(username: string): Observable<CustomHttpRespone> {
+    return this.http.delete<CustomHttpRespone>(`${this.host}/user/delete/${username}`)
   }
 
   public addUsersToLocalCache(users: User[]): void {
