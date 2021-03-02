@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { NotificationType } from '../enum/notification-type.enum';
+import { CustomHttpRespone } from '../model/custom-http-response';
 import { User } from '../model/user';
 import { NotificationService } from '../service/notification.service';
 import { UserService } from '../service/user.service';
@@ -20,7 +21,7 @@ export class UserComponent implements OnInit {
   public refreshing: boolean = false;
   public selectedUser: User = new User;
   public fileName: string = "";
-  public profileImage: File = new File(["foo"], "foo.jpg");
+  public profileImage: any; 
   private subscriptions: Subscription[] = [];
   public editUser: User = new User;
   private currentUsername: string = "";
@@ -67,8 +68,11 @@ export class UserComponent implements OnInit {
     }
 
     const file = input.files[0];
+    console.log(file);
     this.fileName = file.name;
     this.profileImage = file;
+    console.log(this.fileName);
+    console.log(this.profileImage);
   }
 
   public saveNewUser(): void {
@@ -79,17 +83,15 @@ export class UserComponent implements OnInit {
     const formData = this.userService.createUserFormDate("", userForm.value, this.profileImage);
     this.subscriptions.push(
       this.userService.addUser(formData).subscribe(
-        (response: User | any) => {
+        (response: User) => {
           this.clickButton('new-user-close');
           this.getUsers(false);
           this.fileName = "";
-          this.profileImage = new File(["foo"], "foo.jpg");
           userForm.reset();
           this.sendNotification(NotificationType.SUCCESS, `${response.firstName} ${response.lastName} added successfully`);
         },
         (errorResponse: HttpErrorResponse) => {
           this.sendNotification(NotificationType.ERROR, errorResponse.error.message);
-          this.profileImage = new File(["foo"], "foo.jpg");
         }
       )
     );
@@ -97,18 +99,31 @@ export class UserComponent implements OnInit {
 
   public onUpdateUser(): void {
     const formData = this.userService.createUserFormDate(this.currentUsername, this.editUser, this.profileImage);
+    console.log(formData);
     this.subscriptions.push(
       this.userService.updateUser(formData).subscribe(
         (response: User | any) => {
           this.clickButton('closeEditUserModalButton');
           this.getUsers(false);
           this.fileName = "";
-          this.profileImage = new File(["foo"], "foo.jpg");;
           this.sendNotification(NotificationType.SUCCESS, `${response.firstName} ${response.lastName} updated successfully`);
         },
         (errorResponse: HttpErrorResponse) => {
           this.sendNotification(NotificationType.ERROR, errorResponse.error.message);
-          this.profileImage = new File(["foo"], "foo.jpg");;
+        }
+      )
+    );
+  }
+
+  public onDeleteUder(userId: number): void {
+    this.subscriptions.push(
+      this.userService.deleteUser(userId).subscribe(
+        (response: CustomHttpRespone | any) => {
+          this.sendNotification(NotificationType.SUCCESS, response.message);
+          this.getUsers(false);
+        },
+        (error: HttpErrorResponse) => {
+          this.sendNotification(NotificationType.ERROR, error.error.message);
         }
       )
     );
