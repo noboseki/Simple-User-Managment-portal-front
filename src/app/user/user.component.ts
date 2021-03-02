@@ -21,7 +21,7 @@ export class UserComponent implements OnInit {
   public refreshing: boolean = false;
   public selectedUser: User = new User;
   public fileName: string = "";
-  public profileImage: any; 
+  public profileImage: any;
   private subscriptions: Subscription[] = [];
   public editUser: User = new User;
   private currentUsername: string = "";
@@ -68,11 +68,8 @@ export class UserComponent implements OnInit {
     }
 
     const file = input.files[0];
-    console.log(file);
     this.fileName = file.name;
     this.profileImage = file;
-    console.log(this.fileName);
-    console.log(this.profileImage);
   }
 
   public saveNewUser(): void {
@@ -99,7 +96,6 @@ export class UserComponent implements OnInit {
 
   public onUpdateUser(): void {
     const formData = this.userService.createUserFormDate(this.currentUsername, this.editUser, this.profileImage);
-    console.log(formData);
     this.subscriptions.push(
       this.userService.updateUser(formData).subscribe(
         (response: User | any) => {
@@ -111,6 +107,24 @@ export class UserComponent implements OnInit {
         (errorResponse: HttpErrorResponse) => {
           this.sendNotification(NotificationType.ERROR, errorResponse.error.message);
         }
+      )
+    );
+  }
+
+  public onResetPassword(emailForm: NgForm): void {
+    this.refreshing = true;
+    const emailAddress = emailForm.value['reset-password-email'];
+    this.subscriptions.push(
+      this.userService.resetPassword(emailAddress).subscribe(
+        (response: CustomHttpRespone | any) => {
+          this.sendNotification(NotificationType.SUCCESS, response.message);
+          this.refreshing = false;
+        },
+        (error: HttpErrorResponse) => {
+          this.sendNotification(NotificationType.WARNING, error.error.message);
+          this.refreshing = false;
+        },
+        () => emailForm.reset()
       )
     );
   }
